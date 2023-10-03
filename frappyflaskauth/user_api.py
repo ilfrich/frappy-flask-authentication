@@ -17,6 +17,10 @@ def extract_token():
     key = "Authorization"
     if key in request.headers:
         return request.headers[key]
+
+    if key in request.cookies:
+        return request.cookies[key]
+
     return None
 
 
@@ -49,7 +53,7 @@ def perform_login_check(token):
     Performs the actual login check on the token extracted from the header. It will check whether the token is
     registered with the backend and also if the session stored with the token is expired.
     :param token: the token provided by the user through the Authorization header of a HTTP request
-    :return: the logged in user object containing basic information about the user's identity
+    :return: the logged-in user object containing basic information about the user's identity
     :raise AuthenticationError in case the session is expired or the authorization token cannot be found in the current
     login state.
     """
@@ -191,7 +195,9 @@ def register_endpoints(app, user_store, token_store, options_override={}):
             token_store.create(user.id, token)
         login_cache[token] = {"user": user, "time": time.time()}
         # return logged in user
-        return jsonify({"user": _remove_password(user.to_json()), "token": token})
+        resp = jsonify({"user": _remove_password(user.to_json()), "token": token})
+        resp.set_cookie("Authorization", token)
+        return resp
 
     @app.route("{}/logout".format(api_prefix), methods=["DELETE"])
     def logout_user():
