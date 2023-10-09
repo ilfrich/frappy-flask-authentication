@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(name="frappyflaskauth",
-      version="1.6.0",
+      version="1.6.1",
       description="Flask endpoints for user management and authentication.",
       long_description=long_description,
       long_description_content_type="text/markdown",

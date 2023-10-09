@@ -196,7 +196,7 @@ def register_endpoints(app, user_store, token_store, options_override={}):
         login_cache[token] = {"user": user, "time": time.time()}
         # return logged in user
         resp = jsonify({"user": _remove_password(user.to_json()), "token": token})
-        resp.set_cookie("Authorization", token)
+        resp.set_cookie("Authorization", token, max_age=SESSION_EXPIRATION_SECONDS)
         return resp
 
     @app.route("{}/logout".format(api_prefix), methods=["DELETE"])
