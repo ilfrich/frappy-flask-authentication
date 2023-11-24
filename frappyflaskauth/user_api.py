@@ -1,5 +1,6 @@
 import secrets
 import time
+from datetime import timedelta
 from flask import jsonify, request, abort
 from pbu import list_to_json, Logger, default_options
 
@@ -120,7 +121,7 @@ def fill_login_cache(user_store, token_store, use_api_keys):
         if user is not None:
             login_cache[token.token] = {
                 "user": user,
-                "time": time.time(),
+                "time": token.created.timestamp(),
             }
 
     # fill api key cache
@@ -192,7 +193,7 @@ def register_endpoints(app, user_store, token_store, options_override={}):
         # create and store token
         token = generate_token()
         if token_store is not None:
-            token_store.create(user.id, token)
+            token_store.create(user.id, token, lifetime=timedelta(seconds=SESSION_EXPIRATION_SECONDS))
         login_cache[token] = {"user": user, "time": time.time()}
         # return logged in user
         resp = jsonify({"user": _remove_password(user.to_json()), "token": token})
