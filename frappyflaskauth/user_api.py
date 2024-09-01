@@ -101,12 +101,12 @@ def check_login_state(permission=None, allow_api_key=False):
             return user
     except AuthenticationError as ae:
         logger = Logger("user_api")
-        logger.exception(ae)
+        logger.info(ae)
         abort(401)
         raise ae
 
     logger = Logger("user_api")
-    logger.error("User {} doesn't have required privileges: {}".format(user.username, permission))
+    logger.info("User {} doesn't have required privileges: {}".format(user.username, permission))
     abort(403)
     raise AuthenticationError("Insufficient privileges")
 
